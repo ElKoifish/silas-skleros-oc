@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSA Personnel Terminal - Silas Skleros</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none !important;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: #050505;
+            color: #c5c5c5;
+            overflow: hidden;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.4),
+                rgba(0, 0, 0, 0.4) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.8;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 10px;
+            height: 18px;
+            background-color: #fff;
+            box-shadow: 0 0 5px #fff, 0 0 10px #fff;
+            mix-blend-mode: difference;
+            pointer-events: none;
+            z-index: 10000;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .custom-cursor.clicking {
+            transform: scale(0.8);
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #050505;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .vsa-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 30px;
+            animation: pulse 2s ease-in-out infinite;
+            filter: hue-rotate(180deg); /* Adjusting existing logo colors */
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: #666;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar-container {
+            width: 300px;
+            height: 2px;
+            background: #1a1a1a;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4a9eff;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        #bios-screen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 90;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        #bios-screen p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #c5c5c5;
+        }
+
+        .popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 95;
+        }
+
+        .popup-content {
+            background: #0a0a0a;
+            border: 2px solid;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .error-popup .popup-content {
+            border-color: #ef4444;
+        }
+
+        .login-popup .popup-content {
+            border-color: #fbbf24;
+        }
+
+        .terminal-container {
+            display: grid;
+            grid-template-columns: 60px 1fr 400px;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #121212 100%);
+        }
+
+        .sidebar {
+            background: #080808;
+            border-right: 1px solid #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 20px;
+        }
+
+        .sidebar-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar-icon:hover {
+            color: #fff;
+        }
+
+        .sidebar-icon.active {
+            color: #4a9eff;
+        }
+
+        .sidebar-icon.active::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            width: 3px;
+            height: 100%;
+            background: #4a9eff;
+        }
+
+        .main-terminal {
+            padding: 40px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 50px;
+        }
+
+        .welcome-text {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-icon {
+            width: 50px;
+            height: 50px;
+            filter: hue-rotate(180deg);
+        }
+
+        .role-text {
+            font-size: 14px;
+            color: #666;
+            letter-spacing: 4px;
+            margin-top: 10px;
+        }
+
+        .terminal-tabs {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .terminal-tab {
+            padding: 15px 0;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .terminal-tab.active {
+            color: #fff;
+        }
+
+        .terminal-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #4a9eff;
+        }
+
+        .personnel-file {
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .file-header {
+            background: linear-gradient(90deg, #1a1a1a 0%, transparent 100%);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 3px solid #4a9eff;
+        }
+
+        .file-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .file-subtitle {
+            font-size: 11px;
+            color: #666;
+            letter-spacing: 2px;
+        }
+
+        .personnel-photo {
+            width: 200px;
+            height: 200px;
+            border: 2px solid #4a9eff;
+            margin: 20px auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .data-item {
+            background: #0a0a0a;
+            padding: 15px;
+            border: 1px solid #1a1a1a;
+        }
+
+        .data-item-label {
+            font-size: 9px;
+            color: #666;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .data-item-value {
+            font-size: 13px;
+            color: #c5c5c5;
+        }
+
+        .section-title {
+            font-size: 16px;
+            color: #fff;
+            margin: 40px 0 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid #2a2a2a;
+            color: #c5c5c5;
+            font-size: 11px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-family: 'Roboto Mono', monospace;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            border-color: #4a9eff;
+            color: #fff;
+            background: rgba(74, 158, 255, 0.1);
+        }
+
+        .right-panel {
+            background: #080808;
+            border-left: 1px solid #1a1a1a;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        .info-group {
+            margin-bottom: 25px;
+        }
+
+        .info-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 12px;
+            color: #c5c5c5;
+        }
+
+        .stability-meter {
+            width: 100%;
+            height: 60px;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stability-value {
+            font-size: 24px;
+            color: #4ade80;
+            font-weight: 700;
+            letter-spacing: 2px;
+            z-index: 2;
+        }
+
+        .stability-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 30%;
+            background: rgba(74, 222, 128, 0.3);
+            width: 92%;
+        }
+
+        .radar-sweep {
+            position: absolute;
+            inset: 0;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                rgba(74, 158, 255, 0.3) 60deg,
+                transparent 120deg
+            );
+            border-radius: 50%;
+            animation: radarSweep 4s linear infinite;
+        }
+
+        @keyframes radarSweep {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .event-log {
+            margin-top: 30px;
+        }
+
+        .event-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #0a0a0a;
+            border-left: 2px solid #4a9eff;
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .event-time {
+            color: #666;
+            margin-right: 10px;
+        }
+
+        .story-content {
+            line-height: 1.8;
+            color: #c5c5c5;
+            font-size: 13px;
+            max-width: 900px;
+        }
+
+        .story-content p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .dialogue {
+            margin: 25px 0;
+            padding-left: 30px;
+            border-left: 2px solid #4a9eff;
+            font-style: italic;
+            color: #e5e5e5;
+        }
+
+        .action-text {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(26, 26, 26, 0.3);
+            border-left: 3px solid #fbbf24;
+            font-style: normal;
+        }
+
+        .scene-break {
+            text-align: center;
+            margin: 30px 0;
+            color: #666;
+            letter-spacing: 3px;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor" id="cursor"></div>
+    <div class="scanline"></div>
+    
+    <button id="sound-toggle" class="btn" style="position: fixed; top: 10px; right: 10px; z-index: 10001; background: rgba(0,0,0,0.8);">SOUND: ON</button>
+
+    <div class="loading-screen" id="initialLoading">
+        <img src="https://raw.githubusercontent.com/loveisnoob/Tony-M.-Johnson-416-OC/main/BUREAU%20OF%20(8).png" alt="VSA" class="vsa-logo">
+        <div class="loading-text">INITIALIZING VSA-NET</div>
+        <div class="progress-bar-container">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <div id="bios-screen" class="hidden" style="display: none;">
+        <p style="font-size: 18px;">VANTAGE SYSTEMS AUTHORITY OS V.9.2</p>
+        <div id="bios-text" style="margin-top: 30px;"></div>
+    </div>
+
+    <div id="login-popup" class="popup hidden" style="display: none;">
+        <div class="popup-content login-popup">
+            <h2 style="color: #fbbf24; font-size: 20px; margin-bottom: 20px; letter-spacing: 2px;">VSA AUTHENTICATION REQUIRED</h2>
+            <p style="margin-bottom: 15px;">Enter Authorized Surveyor Clearance Code:</p>
+            <div style="background: #000; padding: 15px; font-size: 16px;">
+                <span id="login-code"></span><span style="animation: blink 1s step-end infinite;">_</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="terminal-container" id="mainTerminal" style="display: none;">
+        <div class="sidebar">
+            <div class="sidebar-icon active" data-view="personnel">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </div>
+        </div>
+
+        <div class="main-terminal">
+            <div class="terminal-header">
+                <div>
+                    <div class="welcome-text">
+                        <img src="https://raw.githubusercontent.com/loveisnoob/Tony-M.-Johnson-416-OC/main/BUREAU%20OF%20(8).png" alt="VSA" class="welcome-icon">
+                        VSA PERSONNEL DATABASE
+                    </div>
+                    <div class="role-text">SECURE ACCESS - ZONE NADIR SECTOR</div>
+                </div>
+            </div>
+
+            <div class="terminal-tabs">
+                <div class="terminal-tab active">PERSONNEL FILE</div>
+                <div class="terminal-tab">BACKSTORY</div>
+                <div class="terminal-tab">MORPH CONFIG</div>
+            </div>
+
+            <div id="terminal-content"></div>
+        </div>
+
+        <div class="right-panel">
+            <div class="panel-title">VSA-NET</div>
+
+            <div class="info-group">
+                <div class="info-label">Organization</div>
+                <div class="info-value">Vantage System Authority[cite: 1]</div>
+            </div>
+
+            <div class="info-group">
+                <div class="info-label">Current Sector</div>
+                <div class="info-value">Zone Nadir[cite: 1]</div>
+            </div>
+
+            <div class="info-group">
+                <div class="info-label">Terminal ID</div>
+                <div class="info-value">VSA-TERM-SKL</div>
+            </div>
+
+            <div class="info-label" style="margin-top: 30px;">SPATIAL STABILITY</div>
+            <div class="stability-meter">
+                <div class="stability-bar"></div>
+                <div class="stability-value">0.92 SS</div>
+            </div>
+
+            <div style="text-align: center; font-size: 10px; color: #666; letter-spacing: 1px; margin: 20px 0;">
+                ⸎ VANTAGE ⸎ AUTHORITY ⸎ PROGRESS ⸎
+            </div>
+
+            <div class="event-log">
+                <div class="info-label">EVENT LOG</div>
+                <div class="event-item">
+                    <span class="event-time" id="time1">--:--</span>
+                    <span style="color: #4ade80;">⬥</span> SYSTEMS SYNCED
+                </div>
+                <div class="event-item">
+                    <span class="event-time" id="time2">--:--</span>
+                    <span style="color: #4a9eff;">⬥</span> SURVEYOR AUTHENTICATED
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let audioCtx = null;
+        let ambientSound = null;
+        let soundEnabled = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playTypingSound() {
+            if (!soundEnabled || !audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 800 + Math.random() * 200;
+            osc.type = 'square';
+            gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.05);
+        }
+
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        function typeWriter(el, txt, speed, cb) {
+            let i = 0;
+            el.textContent = '';
+            function type() {
+                if (i < txt.length) {
+                    el.textContent += txt.charAt(i);
+                    playTypingSound();
+                    i++;
+                    setTimeout(type, speed);
+                } else if (cb) cb();
+            }
+            type();
+        }
+
+        let progress = 0;
+        const loadInt = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 100) progress = 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            if (progress >= 100) {
+                clearInterval(loadInt);
+                setTimeout(() => {
+                    document.getElementById('initialLoading').classList.add('hidden');
+                    startBiosSequence();
+                }, 500);
+            }
+        }, 150);
+
+        function startBiosSequence() {
+            document.getElementById('bios-screen').style.display = 'block';
+            const biosText = document.getElementById('bios-text');
+            const lines = [
+                "VSA Quantum Link Established...",
+                "Scanning Baryonic Density...",
+                "Zone Nadir Spatial Geometry: UNSTABLE",
+                "Copyright (c) 2026, Vantage System Authority.",
+                " ",
+                "Initializing Custodian Protocol...",
+                "Welcome back, Surveyor Skleros."
+            ];
+            let lineIdx = 0;
+            function displayNext() {
+                if (lineIdx < lines.length) {
+                    const p = document.createElement('p');
+                    biosText.appendChild(p);
+                    typeWriter(p, lines[lineIdx], 20, displayNext);
+                    lineIdx++;
+                } else {
+                    setTimeout(showLoginPrompt, 1000);
+                }
+            }
+            displayNext();
+        }
+
+        function showLoginPrompt() {
+            const loginPopup = document.getElementById('login-popup');
+            loginPopup.style.display = 'flex';
+            const code = 'VSA-SKLEROS-88';
+            const loginCode = document.getElementById('login-code');
+            let idx = 0;
+            const int = setInterval(() => {
+                if (idx < code.length) {
+                    loginCode.textContent += code[idx++];
+                    playTypingSound();
+                } else {
+                    clearInterval(int);
+                    setTimeout(() => {
+                        document.getElementById('login-popup').style.display = 'none';
+                        document.getElementById('bios-screen').style.display = 'none';
+                        document.getElementById('mainTerminal').style.display = 'grid';
+                        loadPersonnelFile();
+                    }, 1000);
+                }
+            }, 200);
+        }
+
+        function loadPersonnelFile() {
+            const content = document.getElementById('terminal-content');
+            content.innerHTML = `
+                <div class="personnel-file">
+                    <div class="file-header">
+                        <div class="file-title">PERSONNEL FILE: SKLEROS, SILAS</div>
+                        <div class="file-subtitle">VSA SECTOR: ZONE NADIR | NOBILITY SCION</div>
+                    </div>
+
+                    <img src="https://i.imgur.com/KqS7xIn.png" alt="Silas Skleros" class="personnel-photo">
+
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <div class="data-item-label">Name</div>
+                            <div class="data-item-value">Silas Skleros</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-item-label">Age</div>
+                            <div class="data-item-value">20</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-item-label">Heritage</div>
+                            <div class="data-item-value">Eastern Roman Empire (Byzantine)</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-item-label">Height / Weight</div>
+                            <div class="data-item-value">5'8" / 165 lbs</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-item-label">Current Unit</div>
+                            <div class="data-item-value">VSA Surveyor Corps</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-item-label">Aspiration</div>
+                            <div class="data-item-value" style="color: #4a9eff;">Custodian Bureau</div>
+                        </div>
+                    </div>
+
+                    <div class="section-title">SPECIALIZATIONS</div>
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <div class="data-item-value">Criminal Investigation & Forensics</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-item-value">Analytical Problem Solving</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-item-value">Diplomacy & Strategic Negotiation</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 40px; text-align: center;">
+                        <button class="btn" onclick="showBackstory()">VIEW BACKSTORY</button>
+                        <button class="btn" onclick="showMorph()">VIEW MORPH CONFIG</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        const storyChapters = [
+            {
+                title: "CHAPTER 1: THE SCION OF BYZANTIUM",
+                content: `
+                    <p>The name Skleros echoes through history with the weight of ancient emperors and forgotten gold. In this age of interdimensional expansion, Silas stands as a scion of that royal lineage, a bridge between the noble traditions of the Eastern Roman Empire and the cold, industrial reality of the Vantage System Authority[cite: 1].</p>
+                    <p>Growing up under the shadow of his older brother, Silas learned early that survival in the VSA hierarchy required more than just bloodline; it required a mind sharp enough to cut through corporate bureaucracy and spatial instability alike.</p>
+                    <div class="dialogue">
+                        "Tradition is the foundation, Silas, but the Authority is the structure. Never forget which one keeps the air in your lungs." - His Brother.
+                    </div>
+                `
+            },
+            {
+                title: "CHAPTER 2: THE INVESTIGATOR",
+                content: `
+                    <p>Before entering Zone Nadir, Silas served as a crime investigator. His analytical nature allowed him to see patterns where others saw chaos. Whether solving a supply chain theft on a colony world or uncovering dissent within the ranks, Silas approached every problem with a tactical calmness that supported his peers and secured his reputation.</p>
+                    <div class="action-text">
+                        Silas adjusted his eyepatch, his one remaining eye scanning the crime scene with the focus of a hawk. He wasn't just looking for clues; he was looking for the flaw in the system.
+                    </div>
+                `
+            },
+            {
+                title: "CHAPTER 3: THE CUSTODIAN DREAM",
+                content: `
+                    <p>Now operating within the unstable geometry of Zone Nadir, Silas has set his sights on the Custodian Bureau[cite: 1]. It is the ultimate goal—to not just observe the Authority's expansion, but to safeguard its most sensitive operations across planetary systems.</p>
+                    <p>With his brother at his side and his silver-tongued diplomacy at the ready, Silas Skleros navigates the VSA with the poise of a prince and the precision of a predator.</p>
+                `
+            }
+        ];
+
+        window.showBackstory = function() { loadChapter(1); }
+        function loadChapter(chap) {
+            const chapter = storyChapters[chap - 1];
+            const content = document.getElementById('terminal-content');
+            content.innerHTML = `
+                <div class="personnel-file">
+                    <div class="file-header">
+                        <div class="file-title">${chapter.title}</div>
+                        <div class="file-subtitle">HISTORY LOG | ACCESS AUTHORIZED</div>
+                    </div>
+                    <div class="story-content">${chapter.content}</div>
+                    <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+                        ${chap > 1 ? `<button class="btn" onclick="loadChapter(${chap-1})">PREVIOUS</button>` : '<div></div>'}
+                        <div style="display: flex; gap: 10px;">
+                            ${chap < 3 ? `<button class="btn" onclick="loadChapter(${chap+1})">NEXT</button>` : ''}
+                            <button class="btn" onclick="loadPersonnelFile()">PROFILE</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.showMorph = function() {
+            const content = document.getElementById('terminal-content');
+            content.innerHTML = `
+                <div class="personnel-file">
+                    <div class="file-header">
+                        <div class="file-title">MORPH CONFIG: SKLEROS_SILAS</div>
+                        <div class="file-subtitle">VSA STANDARD UNIFORM | BYZANTINE VARIANT</div>
+                    </div>
+                    <div style="margin-top: 30px; background: #0a0a0a; border: 1px solid #1a1a1a; padding: 20px; font-size: 11px; color: #4ade80;">
+                        <div>// VSA ASSET SCRIPT RUNNING...</div>
+                        <div>&permhat Silas_Skleros Eyepatch_Model_A,Tactical_Vest_01,Noble_Scarf</div>
+                        <div>&permshirt Silas_Skleros VSA_Surveyor_Jacket</div>
+                        <div>&permntag Silas_Skleros Silas_Skleros</div>
+                        <div>&permrtag Silas_Skleros <font color="#4a9eff">Vantage System Authority | Surveyor</font></div>
+                        <div>&startergear Silas_Skleros Analytical_Scanner,Sidearm_Standard</div>
+                        <div>&permmaxhealth Silas_Skleros 100</div>
+                    </div>
+                    <button class="btn" style="margin-top:20px" onclick="loadPersonnelFile()">BACK</button>
+                </div>
+            `;
+        }
+
+        document.querySelectorAll('.terminal-tab').forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.terminal-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                if (index === 0) loadPersonnelFile();
+                else if (index === 1) showBackstory();
+                else if (index === 2) showMorph();
+            });
+        });
+
+        document.getElementById('sound-toggle').addEventListener('click', () => {
+            initAudio();
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-toggle').textContent = soundEnabled ? 'SOUND: ON' : 'SOUND: OFF';
+        });
+    </script>
+</body>
+</html>
