@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VSA Personnel Terminal - Silas Skleros</title>
+    <title>VSA Personnel Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -96,12 +96,11 @@
             pointer-events: none;
         }
 
-        .vsa-logo {
+        .owl-logo {
             width: 80px;
             height: 80px;
             margin-bottom: 30px;
             animation: pulse 2s ease-in-out infinite;
-            filter: hue-rotate(180deg); /* Adjusting existing logo colors */
         }
 
         @keyframes pulse {
@@ -172,6 +171,32 @@
             border-color: #fbbf24;
         }
 
+        #memetic-agent {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 96;
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
+        }
+
+        #memetic-agent.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #memetic-agent img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border: 2px solid white;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
         .terminal-container {
             display: grid;
             grid-template-columns: 60px 1fr 400px;
@@ -224,6 +249,19 @@
             position: relative;
         }
 
+        .main-terminal::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .main-terminal::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        .main-terminal::-webkit-scrollbar-thumb {
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+
         .terminal-header {
             display: flex;
             justify-content: space-between;
@@ -244,7 +282,6 @@
         .welcome-icon {
             width: 50px;
             height: 50px;
-            filter: hue-rotate(180deg);
         }
 
         .role-text {
@@ -270,6 +307,10 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             position: relative;
+        }
+
+        .terminal-tab:hover {
+            color: #fff;
         }
 
         .terminal-tab.active {
@@ -385,6 +426,19 @@
             overflow-y: auto;
         }
 
+        .right-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .right-panel::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        .right-panel::-webkit-scrollbar-thumb {
+            background: #2a2a2a;
+            border-radius: 3px;
+        }
+
         .panel-title {
             font-size: 18px;
             font-weight: 700;
@@ -410,7 +464,7 @@
             color: #c5c5c5;
         }
 
-        .stability-meter {
+        .hume-meter {
             width: 100%;
             height: 60px;
             background: #0a0a0a;
@@ -423,7 +477,7 @@
             justify-content: center;
         }
 
-        .stability-value {
+        .hume-value {
             font-size: 24px;
             color: #4ade80;
             font-weight: 700;
@@ -431,13 +485,32 @@
             z-index: 2;
         }
 
-        .stability-bar {
+        .hume-bar {
             position: absolute;
             bottom: 0;
             left: 0;
             height: 30%;
             background: rgba(74, 222, 128, 0.3);
-            width: 92%;
+            width: 78%;
+        }
+
+        .threat-radar {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            position: relative;
+            border: 1px solid #1a1a1a;
+            border-radius: 50%;
+            background: radial-gradient(circle, #0a0a0a 0%, #050505 100%);
+        }
+
+        .radar-circle {
+            position: absolute;
+            border: 1px solid #1a1a1a;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .radar-sweep {
@@ -476,6 +549,54 @@
             margin-right: 10px;
         }
 
+        #sound-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 10001;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-family: 'Roboto Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        #sound-toggle:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .chapter-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .chapter-btn {
+            padding: 8px 16px;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            color: #666;
+            font-size: 10px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .chapter-btn:hover {
+            border-color: #4a9eff;
+            color: #fff;
+        }
+
+        .chapter-btn.active {
+            border-color: #4a9eff;
+            color: #4a9eff;
+            background: rgba(74, 158, 255, 0.1);
+        }
+
         .story-content {
             line-height: 1.8;
             color: #c5c5c5;
@@ -504,6 +625,14 @@
             font-style: normal;
         }
 
+        .thought-text {
+            margin: 15px 0;
+            padding-left: 20px;
+            color: #888;
+            font-style: italic;
+            border-left: 1px solid #666;
+        }
+
         .scene-break {
             text-align: center;
             margin: 30px 0;
@@ -511,35 +640,56 @@
             letter-spacing: 3px;
             font-size: 11px;
         }
+
+        .editor-note {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(74, 158, 255, 0.1);
+            border-left: 3px solid #4a9eff;
+            font-size: 11px;
+            color: #c5c5c5;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
     <div class="custom-cursor" id="cursor"></div>
     <div class="scanline"></div>
     
-    <button id="sound-toggle" class="btn" style="position: fixed; top: 10px; right: 10px; z-index: 10001; background: rgba(0,0,0,0.8);">SOUND: ON</button>
+    <button id="sound-toggle" class="btn">SOUND: ON</button>
 
     <div class="loading-screen" id="initialLoading">
-        <img src="https://raw.githubusercontent.com/loveisnoob/Tony-M.-Johnson-416-OC/main/BUREAU%20OF%20(8).png" alt="VSA" class="vsa-logo">
-        <div class="loading-text">INITIALIZING VSA-NET</div>
+        <img src="add_photo_here" alt="VSA" class="vsa-logo">
+        <div class="loading-text">INITIALIZING VSANET</div>
         <div class="progress-bar-container">
             <div class="progress-fill" id="progressFill"></div>
         </div>
     </div>
 
     <div id="bios-screen" class="hidden" style="display: none;">
-        <p style="font-size: 18px;">VANTAGE SYSTEMS AUTHORITY OS V.9.2</p>
+        <p style="font-size: 18px;">Powered by VSANET OS V.49</p>
         <div id="bios-text" style="margin-top: 30px;"></div>
+    </div>
+
+    <div id="error-popup" class="popup hidden" style="display: none;">
+        <div class="popup-content error-popup">
+            <h2 style="color: #ef4444; font-size: 24px; margin-bottom: 20px; letter-spacing: 2px;">NETWORK ERROR</h2>
+            <p id="error-message" style="font-size: 14px;">Network Unavailable</p>
+        </div>
     </div>
 
     <div id="login-popup" class="popup hidden" style="display: none;">
         <div class="popup-content login-popup">
             <h2 style="color: #fbbf24; font-size: 20px; margin-bottom: 20px; letter-spacing: 2px;">VSA AUTHENTICATION REQUIRED</h2>
-            <p style="margin-bottom: 15px;">Enter Authorized Surveyor Clearance Code:</p>
+            <p style="margin-bottom: 15px;">Please enter your designated VSA Clearance Code:</p>
             <div style="background: #000; padding: 15px; font-size: 16px;">
                 <span id="login-code"></span><span style="animation: blink 1s step-end infinite;">_</span>
             </div>
         </div>
+    </div>
+
+    <div id="memetic-agent">
+        <img src="add_photo_here" alt="MEMETIC KILL AGENT ACTIVATED">
     </div>
 
     <div class="terminal-container" id="mainTerminal" style="display: none;">
@@ -550,65 +700,104 @@
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
             </div>
+            <div class="sidebar-icon" data-view="database">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34-9-3V5"></path>
+                </svg>
+            </div>
+            <div class="sidebar-icon" data-view="files">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                    <polyline points="13 2 13 9 20 9"></polyline>
+                </svg>
+            </div>
         </div>
 
         <div class="main-terminal">
             <div class="terminal-header">
                 <div>
                     <div class="welcome-text">
-                        <img src="https://raw.githubusercontent.com/loveisnoob/Tony-M.-Johnson-416-OC/main/BUREAU%20OF%20(8).png" alt="VSA" class="welcome-icon">
+                        <img src="add_photo_here" alt="OWL" class="welcome-icon">
                         VSA PERSONNEL DATABASE
                     </div>
-                    <div class="role-text">SECURE ACCESS - ZONE NADIR SECTOR</div>
+                    <div class="role-text">SECURE ACCESS</div>
                 </div>
             </div>
 
             <div class="terminal-tabs">
                 <div class="terminal-tab active">PERSONNEL FILE</div>
                 <div class="terminal-tab">BACKSTORY</div>
-                <div class="terminal-tab">MORPH CONFIG</div>
+                <div class="terminal-tab">WIP</div>
             </div>
 
             <div id="terminal-content"></div>
         </div>
 
         <div class="right-panel">
-            <div class="panel-title">VSA-NET</div>
+            <div class="panel-title">VSANET</div>
 
             <div class="info-group">
                 <div class="info-label">Organization</div>
-                <div class="info-value">Vantage System Authority[cite: 1]</div>
-            </div>
-
-            <div class="info-group">
-                <div class="info-label">Current Sector</div>
-                <div class="info-value">Zone Nadir[cite: 1]</div>
+                <div class="info-value">Vantage Systems Authority</div>
             </div>
 
             <div class="info-group">
                 <div class="info-label">Terminal ID</div>
-                <div class="info-value">VSA-TERM-SKL</div>
+                <div class="info-value">VSA-COMMS-02</div>
             </div>
 
-            <div class="info-label" style="margin-top: 30px;">SPATIAL STABILITY</div>
-            <div class="stability-meter">
-                <div class="stability-bar"></div>
-                <div class="stability-value">0.92 SS</div>
+            <div class="info-group">
+                <div class="info-label">Location</div>
+                <div class="info-value">VSA Network Node // Zone Nadir Relay</div>
+            </div>
+
+            <div class="info-group">
+                <div class="info-label">IP Address</div>
+                <div class="info-value">148.70.202.3</div>
+            </div>
+
+            <div class="info-label" style="margin-top: 30px;">HUME METER</div>
+            <div class="hume-meter">
+                <div class="hume-bar"></div>
+                <div class="hume-value">0.78 Hm</div>
+            </div>
+
+            <div class="info-label">THREAT DETECTION</div>
+            <div class="threat-radar">
+                <div class="radar-circle" style="width: 40%; height: 40%;"></div>
+                <div class="radar-circle" style="width: 70%; height: 70%;"></div>
+                <div class="radar-circle" style="width: 100%; height: 100%;"></div>
+                <div class="radar-sweep"></div>
             </div>
 
             <div style="text-align: center; font-size: 10px; color: #666; letter-spacing: 1px; margin: 20px 0;">
-                ⸎ VANTAGE ⸎ AUTHORITY ⸎ PROGRESS ⸎
+                ⸎ VANTAGE ⸎ CONTROL ⸎ EXPANSION ⸎
             </div>
 
             <div class="event-log">
                 <div class="info-label">EVENT LOG</div>
                 <div class="event-item">
                     <span class="event-time" id="time1">--:--</span>
-                    <span style="color: #4ade80;">⬥</span> SYSTEMS SYNCED
+                    <span style="color: #4ade80;">⬥</span> ALL SYSTEMS OPERATIONAL
                 </div>
                 <div class="event-item">
                     <span class="event-time" id="time2">--:--</span>
-                    <span style="color: #4a9eff;">⬥</span> SURVEYOR AUTHENTICATED
+                    <span style="color: #4a9eff;">⬥</span> USER AUTHENTICATED
+                </div>
+                <div class="event-item">
+                    <span class="event-time" id="time3">--:--</span>
+                    <span style="color: #fbbf24;">⬥</span> SECURITY SCAN COMPLETE
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #1a1a1a;">
+                <div style="font-size: 11px; color: #666; text-align: center; letter-spacing: 2px;">
+                    PERSONNEL FILE ACCESS
+                </div>
+                <div style="font-size: 13px; color: #c5c5c5; text-align: center; margin-top: 10px;">
+                    CLEARANCE: N/A
                 </div>
             </div>
         </div>
@@ -622,27 +811,111 @@
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                startAmbientSound();
             }
         }
 
         function playTypingSound() {
             if (!soundEnabled || !audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.value = 800 + Math.random() * 200;
-            osc.type = 'square';
-            gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-            osc.start(audioCtx.currentTime);
-            osc.stop(audioCtx.currentTime + 0.05);
+            
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.frequency.value = 800 + Math.random() * 200;
+                osc.type = 'square';
+                
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.05);
+            } catch (e) {}
         }
+
+        function startAmbientSound() {
+            if (!soundEnabled || ambientSound || !audioCtx) return;
+            
+            try {
+                const o1 = audioCtx.createOscillator();
+                const o2 = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                const filt = audioCtx.createBiquadFilter();
+                
+                o1.type = 'sine';
+                o1.frequency.value = 60;
+                o2.type = 'sine';
+                o2.frequency.value = 120;
+                
+                filt.type = 'lowpass';
+                filt.frequency.value = 200;
+                
+                gain.gain.value = 0.015;
+                
+                o1.connect(filt);
+                o2.connect(filt);
+                filt.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                o1.start();
+                o2.start();
+                
+                ambientSound = { o1, o2, gain };
+            } catch (e) {}
+        }
+
+        function stopAmbientSound() {
+            if (ambientSound) {
+                try {
+                    ambientSound.o1.stop();
+                    ambientSound.o2.stop();
+                } catch (e) {}
+                ambientSound = null;
+            }
+        }
+
+        document.getElementById('sound-toggle').addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-toggle').textContent = soundEnabled ? 'SOUND: ON' : 'SOUND: OFF';
+            
+            if (soundEnabled) {
+                initAudio();
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                startAmbientSound();
+            } else {
+                stopAmbientSound();
+            }
+        });
 
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
+        document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+        document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
+
+        document.addEventListener('click', () => {
+            if (!audioCtx) {
+                initAudio();
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            }
+        }, { once: true });
+
+        function updateEventTimes() {
+            const now = new Date();
+            const fmt = (d) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+            document.getElementById('time1').textContent = fmt(now);
+            document.getElementById('time2').textContent = fmt(new Date(now - 60000));
+            document.getElementById('time3').textContent = fmt(new Date(now - 120000));
+        }
 
         function typeWriter(el, txt, speed, cb) {
             let i = 0;
@@ -650,10 +923,14 @@
             function type() {
                 if (i < txt.length) {
                     el.textContent += txt.charAt(i);
-                    playTypingSound();
+                    if (i % 2 === 0 || Math.random() > 0.5) {
+                        playTypingSound();
+                    }
                     i++;
                     setTimeout(type, speed);
-                } else if (cb) cb();
+                } else if (cb) {
+                    cb();
+                }
             }
             type();
         }
@@ -663,6 +940,7 @@
             progress += Math.random() * 15;
             if (progress > 100) progress = 100;
             document.getElementById('progressFill').style.width = progress + '%';
+
             if (progress >= 100) {
                 clearInterval(loadInt);
                 setTimeout(() => {
@@ -673,17 +951,29 @@
         }, 150);
 
         function startBiosSequence() {
-            document.getElementById('bios-screen').style.display = 'block';
+            const biosScreen = document.getElementById('bios-screen');
+            biosScreen.style.display = 'block';
             const biosText = document.getElementById('bios-text');
+            
             const lines = [
-                "VSA Quantum Link Established...",
-                "Scanning Baryonic Density...",
-                "Zone Nadir Spatial Geometry: UNSTABLE",
-                "Copyright (c) 2026, Vantage System Authority.",
+                "VSA Network BIOS v4.0.3",
+                "Copyright (c) 2091-2099, Vantage Systems Authority.",,
                 " ",
-                "Initializing Custodian Protocol...",
-                "Welcome back, Surveyor Skleros."
+                "Main Processor: Radent Quantum Core @ 5.4 THz",
+                "Memory Testing: 512 ZB OK",
+                " ",
+                "Initializing VSA Secure Handshake Protocol...",
+                "Checking NVRAM...",
+                "Detecting Primary Master... VSA-CORE-PRIME",
+                "Detecting Primary Slave... None",
+                "Detecting Secondary Master... CLASSIFIED",
+                "Detecting Secondary Slave... None",
+                " ",
+                "Cognitohazard Filters Engaged.",
+                "Memetic Kill Agent Shielding Active.",
+                "Loading VSA OS from Secure Sector...",
             ];
+            
             let lineIdx = 0;
             function displayNext() {
                 if (lineIdx < lines.length) {
@@ -692,8 +982,30 @@
                     typeWriter(p, lines[lineIdx], 20, displayNext);
                     lineIdx++;
                 } else {
-                    setTimeout(showLoginPrompt, 1000);
+                    startLoadBar();
                 }
+            }
+            
+            function startLoadBar() {
+                const p = document.createElement('p');
+                p.style.marginTop = '30px';
+                biosText.appendChild(p);
+                let prog = 0;
+                const total = 2048;
+                const int = setInterval(() => {
+                    prog += Math.floor(Math.random() * 50) + 25;
+                    if (prog > total) prog = total;
+                    const perc = Math.floor((prog / total) * 100);
+                    p.textContent = `Loading... (${prog}/${total}) ${perc}%`;
+                    if (prog >= total) {
+                        clearInterval(int);
+                        setTimeout(() => {
+                            biosScreen.style.opacity = '0';
+                            biosScreen.style.transition = 'opacity 1s ease-out';
+                            setTimeout(showLoginPrompt, 1000);
+                        }, 500);
+                    }
+                }, 100);
             }
             displayNext();
         }
@@ -701,129 +1013,191 @@
         function showLoginPrompt() {
             const loginPopup = document.getElementById('login-popup');
             loginPopup.style.display = 'flex';
-            const code = 'VSA-SKLEROS-88';
+            loginPopup.classList.remove('hidden');
+            
+            const code = 'VSA-NADIR-ACCESS-77';
             const loginCode = document.getElementById('login-code');
             let idx = 0;
+            
             const int = setInterval(() => {
                 if (idx < code.length) {
-                    loginCode.textContent += code[idx++];
+                    loginCode.textContent += code[idx];
                     playTypingSound();
+                    idx++;
                 } else {
                     clearInterval(int);
                     setTimeout(() => {
-                        document.getElementById('login-popup').style.display = 'none';
-                        document.getElementById('bios-screen').style.display = 'none';
-                        document.getElementById('mainTerminal').style.display = 'grid';
-                        loadPersonnelFile();
+                        loginPopup.style.opacity = '0';
+                        loginPopup.style.transition = 'opacity 1s ease-out';
+                        setTimeout(showMemeticAgent, 1000);
                     }, 1000);
                 }
             }, 200);
         }
 
-        function loadPersonnelFile() {
-            const content = document.getElementById('terminal-content');
-            content.innerHTML = `
-                <div class="personnel-file">
-                    <div class="file-header">
-                        <div class="file-title">PERSONNEL FILE: SKLEROS, SILAS</div>
-                        <div class="file-subtitle">VSA SECTOR: ZONE NADIR | NOBILITY SCION</div>
-                    </div>
-
-                    <img src="https://i.imgur.com/KqS7xIn.png" alt="Silas Skleros" class="personnel-photo">
-
-                    <div class="data-grid">
-                        <div class="data-item">
-                            <div class="data-item-label">Name</div>
-                            <div class="data-item-value">Silas Skleros</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-item-label">Age</div>
-                            <div class="data-item-value">20</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-item-label">Heritage</div>
-                            <div class="data-item-value">Eastern Roman Empire (Byzantine)</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-item-label">Height / Weight</div>
-                            <div class="data-item-value">5'8" / 165 lbs</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-item-label">Current Unit</div>
-                            <div class="data-item-value">VSA Surveyor Corps</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-item-label">Aspiration</div>
-                            <div class="data-item-value" style="color: #4a9eff;">Custodian Bureau</div>
-                        </div>
-                    </div>
-
-                    <div class="section-title">SPECIALIZATIONS</div>
-                    <div class="data-grid">
-                        <div class="data-item">
-                            <div class="data-item-value">Criminal Investigation & Forensics</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-item-value">Analytical Problem Solving</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-item-value">Diplomacy & Strategic Negotiation</div>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 40px; text-align: center;">
-                        <button class="btn" onclick="showBackstory()">VIEW BACKSTORY</button>
-                        <button class="btn" onclick="showMorph()">VIEW MORPH CONFIG</button>
-                    </div>
-                </div>
-            `;
+        function showMemeticAgent() {
+            const ma = document.getElementById('memetic-agent');
+            ma.classList.add('active');
+            
+            setTimeout(() => {
+                ma.classList.remove('active');
+                setTimeout(() => {
+                    document.getElementById('login-popup').style.display = 'none';
+                    document.getElementById('bios-screen').style.display = 'none';
+                    document.getElementById('mainTerminal').style.display = 'grid';
+                    updateEventTimes();
+                    loadPersonnelFile();
+                }, 1000);
+            }, 3000);
         }
 
-        const storyChapters = [
-            {
-                title: "CHAPTER 1: THE SCION OF BYZANTIUM",
-                content: `
-                    <p>The name Skleros echoes through history with the weight of ancient emperors and forgotten gold. In this age of interdimensional expansion, Silas stands as a scion of that royal lineage, a bridge between the noble traditions of the Eastern Roman Empire and the cold, industrial reality of the Vantage System Authority[cite: 1].</p>
-                    <p>Growing up under the shadow of his older brother, Silas learned early that survival in the VSA hierarchy required more than just bloodline; it required a mind sharp enough to cut through corporate bureaucracy and spatial instability alike.</p>
-                    <div class="dialogue">
-                        "Tradition is the foundation, Silas, but the Authority is the structure. Never forget which one keeps the air in your lungs." - His Brother.
-                    </div>
-                `
-            },
-            {
-                title: "CHAPTER 2: THE INVESTIGATOR",
-                content: `
-                    <p>Before entering Zone Nadir, Silas served as a crime investigator. His analytical nature allowed him to see patterns where others saw chaos. Whether solving a supply chain theft on a colony world or uncovering dissent within the ranks, Silas approached every problem with a tactical calmness that supported his peers and secured his reputation.</p>
-                    <div class="action-text">
-                        Silas adjusted his eyepatch, his one remaining eye scanning the crime scene with the focus of a hawk. He wasn't just looking for clues; he was looking for the flaw in the system.
-                    </div>
-                `
-            },
-            {
-                title: "CHAPTER 3: THE CUSTODIAN DREAM",
-                content: `
-                    <p>Now operating within the unstable geometry of Zone Nadir, Silas has set his sights on the Custodian Bureau[cite: 1]. It is the ultimate goal—to not just observe the Authority's expansion, but to safeguard its most sensitive operations across planetary systems.</p>
-                    <p>With his brother at his side and his silver-tongued diplomacy at the ready, Silas Skleros navigates the VSA with the poise of a prince and the precision of a predator.</p>
-                `
-            }
-        ];
+        function loadPersonnelFile() {
+            const content = document.getElementById('terminal-content');
+content.innerHTML = `
+<div class="personnel-file">
+    <div class="file-header">
+        <div class="file-title">PERSONNEL FILE: SKLEROS, SILAS</div>
+        <div class="file-subtitle">CLEARANCE: PENDING | VANTAGE SYSTEMS AUTHORITY</div>
+    </div>
 
-        window.showBackstory = function() { loadChapter(1); }
+    <img src="YOUR_IMAGE_PATH_HERE" alt="Personnel Photo" class="personnel-photo">
+
+    <div class="data-grid">
+        <div class="data-item">
+            <div class="data-item-label">Name</div>
+            <div class="data-item-value">Silas Skleros</div>
+        </div>
+        <div class="data-item">
+            <div class="data-item-label">Age</div>
+            <div class="data-item-value">20</div>
+        </div>
+        <div class="data-item">
+            <div class="data-item-label">Lineage</div>
+            <div class="data-item-value">Skleros Noble Line (Neo-Byzantine Descent)</div>
+        </div>
+        <div class="data-item">
+            <div class="data-item-label">Height</div>
+            <div class="data-item-value">5'8" (173 cm)</div>
+        </div>
+        <div class="data-item">
+            <div class="data-item-label">Weight</div>
+            <div class="data-item-value">165 lbs (75 kg)</div>
+        </div>
+        <div class="data-item">
+            <div class="data-item-label">Affiliation</div>
+            <div class="data-item-value">Vantage Systems Authority</div>
+        </div>
+        <div class="data-item">
+            <div class="data-item-label">Current Status</div>
+            <div class="data-item-value">Independent Contractor / Candidate</div>
+        </div>
+        <div class="data-item">
+            <div class="data-item-label">Target Division</div>
+            <div class="data-item-value">Custodian Bureau</div>
+        </div>
+        <div class="data-item">
+            <div class="data-item-label">Background</div>
+            <div class="data-item-value">Former Criminal Investigator</div>
+        </div>
+    </div>
+
+    <div class="section-title">SPECIALIZATIONS</div>
+    <div class="data-grid">
+        <div class="data-item"><div class="data-item-value">Advanced Interpersonal Negotiation</div></div>
+        <div class="data-item"><div class="data-item-value">Analytical Deduction & Pattern Recognition</div></div>
+        <div class="data-item"><div class="data-item-value">Criminal Investigation & Case Reconstruction</div></div>
+        <div class="data-item"><div class="data-item-value">Adaptive Problem Solving Under Pressure</div></div>
+        <div class="data-item"><div class="data-item-value">Team Mediation & Strategic Communication</div></div>
+    </div>
+
+    <div class="section-title">SERVICE PROGRESSION</div>
+    <div style="background: #0a0a0a; padding: 20px; border-left: 3px solid #4a9eff; line-height: 2;">
+        <div style="margin-bottom: 10px;"><span style="color: #4a9eff;">Early Life:</span> Raised within Skleros noble lineage traditions</div>
+        <div style="margin-bottom: 10px;"><span style="color: #4a9eff;">Adolescence:</span> Formal education in law, rhetoric, and systems analysis</div>
+        <div style="margin-bottom: 10px;"><span style="color: #4a9eff;">18–20:</span> Active work as criminal investigator</div>
+        <div><span style="color: #4a9eff;">Current:</span> Traveling alongside elder brother, seeking VSA Custodian Bureau entry</div>
+    </div>
+
+    <div style="margin-top: 40px; text-align: center;">
+        <button class="btn" onclick="showBackstory()">VIEW BACKSTORY</button>
+        <button class="btn" onclick="showMorph()">VIEW WIP</button>
+    </div>
+</div>
+`;
+        }
+
+const storyChapters = [
+{
+title: "CHAPTER 1: THE SCION OF BYZANTIUM",
+content: `
+<p>The Skleros bloodline traces its origin to the remnants of the Eastern Roman aristocracy—preserved through generations not by territory, but by influence, intellect, and survival.</p>
+
+<p>Silas Skleros was born into this legacy, not as a ruler, but as an observer. Where others inherited command, he inherited expectation.</p>
+
+<p>His upbringing was structured, disciplined, and precise—education in rhetoric, logic, and behavioral analysis forming the core of his development.</p>
+`
+},
+{
+title: "CHAPTER 2: THE PURPLE INVESTIGATOR",
+content: `
+<p>Silas pursued criminal investigation not out of duty, but necessity. Systems fascinated him—how they failed, how people broke them, and how patterns always emerged beneath chaos.</p>
+
+<p>He became known for his ability to read situations rapidly, deconstruct motives, and guide outcomes without direct force.</p>
+
+<p>More importantly, he learned how to speak—how to turn conflict into compliance.</p>
+`
+},
+{
+title: "CHAPTER 3: VSA INTEREST",
+content: `
+<p>The Vantage Systems Authority does not recruit blindly. Individuals like Silas are observed long before contact is ever made.</p>
+
+<p>Zone Nadir changed the equation. The need for analysts capable of interpreting unstable environments grew critical.</p>
+
+<p>Silas now travels alongside his older brother, operating independently while positioning himself for entry into the Custodian Bureau.</p>
+
+<p>He understands one thing clearly: in Zone Nadir, logic is not enough—but it is still the best weapon available.</p>
+`
+                      </div>
+            },
+  
+        let currentChapter = 1;
+
+        window.showBackstory = function() {
+            currentChapter = 1;
+            loadChapter(1);
+        }
+
         function loadChapter(chap) {
+            currentChapter = chap;
             const chapter = storyChapters[chap - 1];
+            
+            if (!chapter) return;
+            
             const content = document.getElementById('terminal-content');
             content.innerHTML = `
                 <div class="personnel-file">
                     <div class="file-header">
                         <div class="file-title">${chapter.title}</div>
-                        <div class="file-subtitle">HISTORY LOG | ACCESS AUTHORIZED</div>
+                        <div class="file-subtitle">CHAPTER ${chap} OF 3 | CLASSIFIED MATERIAL</div>
                     </div>
-                    <div class="story-content">${chapter.content}</div>
-                    <div style="margin-top: 40px; display: flex; justify-content: space-between;">
-                        ${chap > 1 ? `<button class="btn" onclick="loadChapter(${chap-1})">PREVIOUS</button>` : '<div></div>'}
+                    
+                    <div class="chapter-nav">
+                        <button class="chapter-btn ${chap === 1 ? 'active' : ''}" onclick="loadChapter(1)">CHAPTER 1: ORIGINS</button>
+                        <button class="chapter-btn ${chap === 2 ? 'active' : ''}" onclick="loadChapter(2)">CHAPTER 2: THE GOC</button>
+                        <button class="chapter-btn ${chap === 3 ? 'active' : ''}" onclick="loadChapter(3)">CHAPTER 3: THE OWL CALLS</button>
+                    </div>
+                    
+                    <div class="story-content">
+                        ${chapter.content}
+                    </div>
+                    
+                    <div style="margin-top: 40px; display: flex; justify-content: space-between; align-items: center;">
+                        ${chap > 1 ? `<button class="btn" onclick="loadChapter(${chap - 1})">← PREVIOUS CHAPTER</button>` : '<div></div>'}
+                        
                         <div style="display: flex; gap: 10px;">
-                            ${chap < 3 ? `<button class="btn" onclick="loadChapter(${chap+1})">NEXT</button>` : ''}
-                            <button class="btn" onclick="loadPersonnelFile()">PROFILE</button>
+                            ${chap < 3 ? `<button class="btn" onclick="loadChapter(${chap + 1})">NEXT CHAPTER →</button>` : ''}
+                            <button class="btn" onclick="loadPersonnelFile()">BACK TO PROFILE</button>
                         </div>
                     </div>
                 </div>
@@ -835,19 +1209,30 @@
             content.innerHTML = `
                 <div class="personnel-file">
                     <div class="file-header">
-                        <div class="file-title">MORPH CONFIG: SKLEROS_SILAS</div>
-                        <div class="file-subtitle">VSA STANDARD UNIFORM | BYZANTINE VARIANT</div>
+                        <div class="file-title">MORPH CONFIGURATION: JOHNSON, TONY M.</div>
+                        <div class="file-subtitle">LOADOUT | APPEARANCE SETTINGS</div>
                     </div>
-                    <div style="margin-top: 30px; background: #0a0a0a; border: 1px solid #1a1a1a; padding: 20px; font-size: 11px; color: #4ade80;">
-                        <div>// VSA ASSET SCRIPT RUNNING...</div>
-                        <div>&permhat Silas_Skleros Eyepatch_Model_A,Tactical_Vest_01,Noble_Scarf</div>
-                        <div>&permshirt Silas_Skleros VSA_Surveyor_Jacket</div>
-                        <div>&permntag Silas_Skleros Silas_Skleros</div>
-                        <div>&permrtag Silas_Skleros <font color="#4a9eff">Vantage System Authority | Surveyor</font></div>
-                        <div>&startergear Silas_Skleros Analytical_Scanner,Sidearm_Standard</div>
-                        <div>&permmaxhealth Silas_Skleros 100</div>
+                    <div style="margin-top: 30px; background: #0a0a0a; border: 1px solid #1a1a1a; padding: 20px; font-size: 11px; line-height: 1.8; color: #4ade80; font-family: 'Roboto Mono', monospace;">
+                        <div style="color: #666; margin-bottom: 15px;">// MORPH CONFIGURATION SCRIPT</div>
+                        <div>run</div>
+                        <div>permmorph EchelonInfinity remove</div>
+                        <div>&unpermall EchelonInfinity</div>
+                        <div>&clearstartergear EchelonInfinity</div>
+                        <div>&permhat EchelonInfinity 135888030225374,17558504180,17430938152,jqnvg 255 255 255,111740885429679,130045625518506,99852547995142,15894024628,81310553353684,102709985708573</div>
+                        <div>&permshirt EchelonInfinity 70391978364423 101079969037960</div>
+                        <div>&permface EchelonInfinity 406002032</div>
+                        <div>&permntag EchelonInfinity Tony_M._Johnson</font></div>
+                        <div>&permrtag EchelonInfinity <font face="SpecialElite">Order of the White Lotus | [E2] Operative</font></div>
+                        <div>&startergear EchelonInfinity Honey Badger,KV-12,crowbar</div>
+                        <div>&permmaxhealth EchelonInfinity 120</div>
+                        <div style="color: #666; margin-top: 15px;">// END CONFIGURATION</div>
                     </div>
-                    <button class="btn" style="margin-top:20px" onclick="loadPersonnelFile()">BACK</button>
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(74, 158, 255, 0.1); border-left: 3px solid #4a9eff; font-size: 11px; color: #c5c5c5;">
+                        <strong style="color: #4a9eff;">NOTE:</strong> Honestly no idea why I added this :v
+                    </div>
+                    <div style="margin-top: 40px; text-align: center;">
+                        <button class="btn" onclick="loadPersonnelFile()">BACK TO PROFILE</button>
+                    </div>
                 </div>
             `;
         }
@@ -856,16 +1241,23 @@
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.terminal-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
+                
                 if (index === 0) loadPersonnelFile();
                 else if (index === 1) showBackstory();
                 else if (index === 2) showMorph();
             });
         });
 
-        document.getElementById('sound-toggle').addEventListener('click', () => {
-            initAudio();
-            soundEnabled = !soundEnabled;
-            document.getElementById('sound-toggle').textContent = soundEnabled ? 'SOUND: ON' : 'SOUND: OFF';
+        document.querySelectorAll('.sidebar-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-icon').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                const view = this.dataset.view;
+                if (view === 'personnel') {
+                    loadPersonnelFile();
+                }
+            });
         });
     </script>
 </body>
