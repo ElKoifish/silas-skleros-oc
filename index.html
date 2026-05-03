@@ -719,7 +719,7 @@
             <div class="terminal-header">
                 <div>
                     <div class="welcome-text">
-                        <img src="add_photo_here" alt="OWL" class="welcome-icon">
+                        <img src="add_photo_here" alt="VSA" class="welcome-icon">
                         VSA PERSONNEL DATABASE
                     </div>
                     <div class="role-text">SECURE ACCESS</div>
@@ -957,7 +957,7 @@
             
             const lines = [
                 "VSA Network BIOS v4.0.3",
-                "Copyright (c) 2091-2099, Vantage Systems Authority.",,
+                "Copyright (c) 2089-2133, Vantage Systems Authority.",,
                 " ",
                 "Main Processor: Radent Quantum Core @ 5.4 THz",
                 "Memory Testing: 512 ZB OK",
@@ -1148,61 +1148,58 @@ content: `
 `
 },
 {
-title: "CHAPTER 3: VSA INTEREST",
-content: `
-<p>The Vantage Systems Authority does not recruit blindly. Individuals like Silas are observed long before contact is ever made.</p>
+    title: "CHAPTER 3: VSA INTEREST",
+    content: `
+        <p>The Vantage Systems Authority does not recruit blindly. Individuals like Silas are observed long before contact is ever made.</p>
+        <p>Zone Nadir changed the equation. The need for analysts capable of interpreting unstable environments grew critical.</p>
+        <p>Silas now travels alongside his older brother, operating independently while positioning himself for entry into the Custodian Bureau.</p>
+        <p>He understands one thing clearly: in Zone Nadir, logic is not enough—but it is still the best weapon available.</p>
+    `
+}
+]; // Properly closing the array
 
-<p>Zone Nadir changed the equation. The need for analysts capable of interpreting unstable environments grew critical.</p>
+let currentChapter = 1;
 
-<p>Silas now travels alongside his older brother, operating independently while positioning himself for entry into the Custodian Bureau.</p>
+window.showBackstory = function() {
+    currentChapter = 1;
+    loadChapter(1);
+}
 
-<p>He understands one thing clearly: in Zone Nadir, logic is not enough—but it is still the best weapon available.</p>
-`
-                      </div>
-            },
-  
-        let currentChapter = 1;
-
-        window.showBackstory = function() {
-            currentChapter = 1;
-            loadChapter(1);
-        }
-
-        function loadChapter(chap) {
-            currentChapter = chap;
-            const chapter = storyChapters[chap - 1];
+function loadChapter(chap) {
+    currentChapter = chap;
+    const chapter = storyChapters[chap - 1];
+    
+    if (!chapter) return;
+    
+    const content = document.getElementById('terminal-content');
+    content.innerHTML = `
+        <div class="personnel-file">
+            <div class="file-header">
+                <div class="file-title">${chapter.title}</div>
+                <div class="file-subtitle">CHAPTER ${chap} OF 3 | CLASSIFIED MATERIAL</div>
+            </div>
             
-            if (!chapter) return;
+            <div class="chapter-nav">
+                <button class="chapter-btn ${chap === 1 ? 'active' : ''}" onclick="loadChapter(1)">CHAPTER 1: THE SCION OF BYZANTIUM</button>
+                <button class="chapter-btn ${chap === 2 ? 'active' : ''}" onclick="loadChapter(2)">CHAPTER 2: THE PURPLE INVESTIGATOR</button>
+                <button class="chapter-btn ${chap === 3 ? 'active' : ''}" onclick="loadChapter(3)">CHAPTER 3: VSA INTEREST</button>
+            </div>
             
-            const content = document.getElementById('terminal-content');
-            content.innerHTML = `
-                <div class="personnel-file">
-                    <div class="file-header">
-                        <div class="file-title">${chapter.title}</div>
-                        <div class="file-subtitle">CHAPTER ${chap} OF 3 | CLASSIFIED MATERIAL</div>
-                    </div>
-                    
-                    <div class="chapter-nav">
-                        <button class="chapter-btn ${chap === 1 ? 'active' : ''}" onclick="loadChapter(1)">CHAPTER 1: ORIGINS</button>
-                        <button class="chapter-btn ${chap === 2 ? 'active' : ''}" onclick="loadChapter(2)">CHAPTER 2: THE GOC</button>
-                        <button class="chapter-btn ${chap === 3 ? 'active' : ''}" onclick="loadChapter(3)">CHAPTER 3: THE OWL CALLS</button>
-                    </div>
-                    
-                    <div class="story-content">
-                        ${chapter.content}
-                    </div>
-                    
-                    <div style="margin-top: 40px; display: flex; justify-content: space-between; align-items: center;">
-                        ${chap > 1 ? `<button class="btn" onclick="loadChapter(${chap - 1})">← PREVIOUS CHAPTER</button>` : '<div></div>'}
-                        
-                        <div style="display: flex; gap: 10px;">
-                            ${chap < 3 ? `<button class="btn" onclick="loadChapter(${chap + 1})">NEXT CHAPTER →</button>` : ''}
-                            <button class="btn" onclick="loadPersonnelFile()">BACK TO PROFILE</button>
-                        </div>
-                    </div>
+            <div class="story-content">
+                ${chapter.content}
+            </div>
+            
+            <div style="margin-top: 40px; display: flex; justify-content: space-between; align-items: center;">
+                ${chap > 1 ? `<button class="btn" onclick="loadChapter(${chap - 1})">← PREVIOUS CHAPTER</button>` : '<div></div>'}
+                
+                <div style="gap: 10px; display: flex;">
+                    ${chap < 3 ? `<button class="btn" onclick="loadChapter(${chap + 1})">NEXT CHAPTER →</button>` : ''}
+                    <button class="btn" onclick="loadPersonnelFile()">BACK TO PROFILE</button>
                 </div>
-            `;
-        }
+            </div>
+        </div>
+    `;
+}
 
         window.showMorph = function() {
             const content = document.getElementById('terminal-content');
@@ -1259,6 +1256,8 @@ content: `
                 }
             });
         });
+      
+      
     </script>
 </body>
 </html>
